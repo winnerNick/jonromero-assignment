@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assignment</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+
+    <style>
+        #autocomplete {
+            position: absolute;
+            border: solid 1px grey;
+        }
+        div.search {
+            width: 600px;
+        }
+        div.selector:hover {
+            background-color: lightgrey;
+            cursor: pointer;
+        }
+        span.symbol {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        span.name {
+            font-size: 12px;
+        }
+    </style>
+    <script>
+      function tickerSearch() {
+        return {
+          tickerTextSearch: '',
+          tickers: [],
+          fetchTickers() {
+              if (this.tickerTextSearch) {
+                  fetch(`/tickers?s=${this.tickerTextSearch}`)
+                      .then(res => res.json())
+                      .then(data => {
+                        this.tickers = data;
+                      });
+              } else {
+                  this.tickers = [];
+              }
+          }
+        }
+      }
+    </script>
+</head>
+<body>
+    <div class="p-5" x-data="tickerSearch()">
+        <div class="search m-auto">
+            <h2>Ticker symbol (e.g. SPY):</h2>
+            <input class="form-control form-control-lg" type="text" @keyup="fetchTickers()" name="tickerTextSearch" x-model="tickerTextSearch" />
+            <div id="autocomplete" :class="[tickers.length ? '': 'd-none']">
+                <template x-for="ticker in tickers" :key="ticker">
+                    <div class="selector">
+                        <span class="symbol" x-text="ticker.symbol"></span>
+                        <span class="name" x-text="ticker.name"></span>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
